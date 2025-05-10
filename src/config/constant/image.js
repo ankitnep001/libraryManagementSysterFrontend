@@ -1,3 +1,5 @@
+import logo from '../../assets/images/logo.png'
 
-
-export const image = {}
+export const image = {
+    logo
+}
