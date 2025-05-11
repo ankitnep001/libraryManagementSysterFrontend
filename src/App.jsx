@@ -9,7 +9,7 @@ import UserTemplate from "./ui/user/template/UserTemplate"
 const router = createBrowserRouter([
 
   {
-    path: '/home',
+    path: '/',
     element: <UserTemplate />,
     children: [
       { index: true, element: <Home /> },
@@ -20,7 +20,7 @@ const router = createBrowserRouter([
   },
 
   {
-    path: '/',
+    path: '/auth',
     element: null,
     children: [
       { index: true, element: <Login /> },
@@ -30,17 +30,17 @@ const router = createBrowserRouter([
       { path: '*', element: <PageNotFound /> }
     ]
   },
-  {
-    path: '/auth',
-    element: null,
-    children: [
-      { index: true, element: <Login /> },
-      { path: 'login', element: <Login /> },
-      // { path: 'signup', element: <Signup /> },
+  // {
+  //   path: '/auth',
+  //   element: null,
+  //   children: [
+  //     { index: true, element: <Login /> },
+  //     { path: 'login', element: <Login /> },
+  //     // { path: 'signup', element: <Signup /> },
 
-      { path: '*', element: <PageNotFound /> }
-    ]
-  },
+  //     { path: '*', element: <PageNotFound /> }
+  //   ]
+  // },
 
 
 
