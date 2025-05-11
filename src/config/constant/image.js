@@ -1,6 +1,6 @@
-import logo1 from '../../assets/images/logo1.png'
+import logo from '../../assets/images/logo.png'
 
 export const image = {
 
-    logo1
+    logo
 }
