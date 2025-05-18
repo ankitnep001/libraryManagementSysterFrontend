@@ -22,9 +22,9 @@ const Navbar = () => {
                     >
                         <HiOutlineMenuAlt3 size={24} />
                     </button>
-                    <Link to="/home" className="flex items-center">
-                        <Logo className="h-8 w-auto" />
-                    </Link>
+
+                    <Logo className="h-8 w-auto" />
+
                 </div>
 
                 {/* Desktop Navigation */}
