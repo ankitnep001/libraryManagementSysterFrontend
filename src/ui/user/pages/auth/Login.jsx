@@ -7,10 +7,10 @@ import { IoMailUnreadOutline } from 'react-icons/io5';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { loginSchema } from '../../../../config/schema/auth.schema';
 import { gridItems } from '../../../../data/loginDescription';
+import { toast } from '../../../../ui/common/organism/toast/ToastManage';
 import InputField from '../../../common/atoms/InputField';
 import Label from '../../../common/atoms/Label';
 import Logo from '../../../common/molecules/Logo';
-
 const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -36,6 +36,9 @@ const Login = () => {
             localStorage.setItem('userName', userName);
             localStorage.setItem('role', role);
 
+            toast.show({ title: "Success", content: "Login successfully", duration: 2000, type: 'success' });
+
+
             // Route based on role
             if (role === 'ADMIN') {
                 navigate('/admin');
@@ -47,6 +50,8 @@ const Login = () => {
 
         } catch (error) {
             console.error('Login error:', error.response?.data?.message || error.message);
+            toast.show({ title: "Error", content: "Login Unsuccessfully", duration: 2000, type: 'error' });
+
         }
     };
 
