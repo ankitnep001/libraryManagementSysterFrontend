@@ -1,46 +1,48 @@
-import { useState } from "react";
-import { IoIosEyeOff, IoMdEye } from "react-icons/io";
+import React, { useState } from 'react';
+import { IoIosEyeOff, IoMdEye } from 'react-icons/io';
 
-const InputField = ({
+const InputField = React.forwardRef(({
     name,
     type = 'text',
     placeholder = '',
     autocomplete = 'off',
     disabled = false,
-    // value = '',
-    onChange
-}) => {
+    onChange,
+    ...rest
+}, ref) => {
     const [showPassword, setShowPassword] = useState(false);
+    const togglePassword = () => setShowPassword(prev => !prev);
 
-    const togglePassword = () => {
-        setShowPassword(!showPassword);
-    };
+    const isPasswordField = type === 'password';
+    const inputType = isPasswordField && showPassword ? 'text' : type;
 
     return (
         <div className="relative">
             <input
-                type={showPassword ? 'text' : type}
+                ref={ref}
+                name={name}
+                type={inputType}
                 id={name}
                 placeholder={placeholder}
                 disabled={disabled}
                 autoComplete={autocomplete}
-                // value={value}
                 onChange={onChange}
-                className={`font-poppins w-full text-sm mb-2 pl-10 pr-3 py-2 border-2 border-[#e3e7ea] rounded-md focus:outline-none ${disabled ? 'cursor-not-allowed' : ''
+                {...rest}
+                className={`font-poppins w-full text-sm mb-2 pl-10 pr-10 py-2 border-2 border-[#e3e7ea] rounded-md focus:outline-none ${disabled ? 'cursor-not-allowed bg-gray-100' : ''
                     }`}
             />
-            {type === 'password' && (
+            {isPasswordField && (
                 <button
                     type="button"
-                    className="absolute right-3 top-[12px] text-[#5b3423]"
                     onClick={togglePassword}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-[12px] text-[#5b3423] focus:outline-none"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                    {showPassword ? <IoMdEye /> : <IoIosEyeOff />}
+                    {showPassword ? <IoMdEye size={18} /> : <IoIosEyeOff size={18} />}
                 </button>
             )}
         </div>
     );
-};
+});
 
 export default InputField;
