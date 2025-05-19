@@ -11,15 +11,20 @@ export const menuItems = [
     //     icon: "📚"
     // },
     {
-        title: "Genres",
-        path: "/genres",
+        title: "Books",
+        path: "/book",
 
-        submenu: [
-            { title: "Fiction", path: "/genres/fiction" },
-            { title: "Non-Fiction", path: "/genres/non-fiction" },
-            { title: "Science", path: "/genres/science" }
-        ]
     },
+    // {
+    //     title: "Genres",
+    //     path: "/genres",
+
+    //     submenu: [
+    //         { title: "Fiction", path: "/genres/fiction" },
+    //         { title: "Non-Fiction", path: "/genres/non-fiction" },
+    //         { title: "Science", path: "/genres/science" }
+    //     ]
+    // },
     {
         title: "About",
         path: "/about",

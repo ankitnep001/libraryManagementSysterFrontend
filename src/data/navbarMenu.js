@@ -1,3 +1,3 @@
-export const navbarMenu=[
-    "Home", "Genre", 
+export const navbarMenu = [
+    "Home", "Books",
 ]
