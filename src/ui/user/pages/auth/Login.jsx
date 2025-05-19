@@ -27,22 +27,29 @@ const Login = () => {
         try {
             const response = await axios.post('http://localhost:9090/api/user/auth/sign-in', data);
 
-            const { token, refreshToken, userId, userName } = response.data;
+            const { token, refreshToken, userId, userName, role } = response.data;
 
-            // Store tokens and user info (use sessionStorage if you want it cleared on browser close)
+            // Store tokens and user info
             localStorage.setItem('token', token);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
             localStorage.setItem('userName', userName);
+            localStorage.setItem('role', role);
 
-
-            window.location.href = '/';
+            // Route based on role
+            if (role === 'ADMIN') {
+                navigate('/admin');
+            } else if (role === 'STUDENT') {
+                navigate('/');
+            } else {
+                navigate('/auth');
+            }
 
         } catch (error) {
             console.error('Login error:', error.response?.data?.message || error.message);
-
         }
     };
+
 
     useEffect(() => {
         const refreshAccessToken = async () => {
