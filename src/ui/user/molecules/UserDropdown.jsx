@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const UserDropdown = () => {
@@ -14,9 +14,9 @@ const UserDropdown = () => {
     const handleLogout = () => {
         localStorage.removeItem("userId");
         localStorage.removeItem("refreshToken");
-        localStorage.removeItem("accessToken");
         localStorage.removeItem("userName");
         localStorage.removeItem("token");
+        localStorage.removeItem("role");
         navigate("/auth");
     };
 
