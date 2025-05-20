@@ -1,7 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "../src/ProtectedRoute";
 import AdminTemplate from '../src/ui/admin/template/AdminTemplate';
+import BookTable from "./ui/admin/pages/BookTable";
+import BorrowedBook from "./ui/admin/pages/BorrwoedBook";
 import Dashboard from "./ui/admin/pages/Dashboard";
+import UserTable from "./ui/admin/pages/UserTable";
 import PageNotFound from "./ui/common/pages/PageNotFound";
 import Login from "./ui/user/pages/auth/Login";
 import Signup from "./ui/user/pages/auth/Signup";
@@ -35,6 +38,9 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <Dashboard /> },
           { path: 'dashboard', element: <Dashboard /> },
+          { path: 'users', element: <UserTable /> },
+          { path: 'books', element: <BookTable /> },
+          { path: 'borrowed-books', element: <BorrowedBook /> },
           { path: '*', element: <PageNotFound /> }
         ]
       }
