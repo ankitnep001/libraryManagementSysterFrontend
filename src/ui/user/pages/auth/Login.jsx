@@ -25,7 +25,7 @@ const Login = () => {
 
     const onSubmit = async (data) => {
         try {
-            const response = await axios.post('http://localhost:9090/api/user/auth/sign-in', data);
+            const response = await axios.post('http://localhost:8080/api/user/auth/sign-in', data);
 
             const { token, refreshToken, userId, userName, role } = response.data;
 

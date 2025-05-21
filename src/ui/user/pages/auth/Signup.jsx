@@ -25,7 +25,7 @@ const Signup = () => {
     const onSubmit = async (data) => {
         try {
             console.log('Submitting data:', data); // <-- Log submitted data
-            const response = await axios.post('http://localhost:9090/api/user/auth/sign-up', data);
+            const response = await axios.post('http://localhost:8080/api/user/auth/sign-up', data);
 
             console.log('Response:', response.data); // <-- Log the response
 
