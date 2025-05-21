@@ -1,5 +1,6 @@
 import {
     BookOpen,
+    ChartBarStacked,
     LayoutDashboard,
     ListOrdered,
     LogOut,
@@ -11,6 +12,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 const navItems = [
     { name: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
     { name: "Users", path: "/admin/users", icon: Users },
+    { name: "Books Category", path: "/admin/category", icon: ChartBarStacked },
     { name: "Books", path: "/admin/books", icon: BookOpen },
     { name: "Borrowed Books", path: "/admin/borrowed-books", icon: ListOrdered },
     { name: "Settings", path: "", icon: Settings },

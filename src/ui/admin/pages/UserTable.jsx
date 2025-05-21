@@ -10,7 +10,7 @@ const AdminTable = () => {
     const fetchUsers = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:9090/api/user/admin/getAll', {
+            const response = await axios.get('http://localhost:8080/api/user/admin/getAll', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -28,7 +28,7 @@ const AdminTable = () => {
     const handleView = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`http://localhost:9090/api/user/getById/${id}`, {
+            const res = await axios.get(`http://localhost:8080/api/user/getById/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -46,7 +46,7 @@ const AdminTable = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.get(`http://localhost:9090/api/user/admin/delete/${id}`, {
+            await axios.get(`http://localhost:8080/api/user/admin/delete/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -65,14 +65,12 @@ const AdminTable = () => {
 
     return (
         <div className="bg-[#262626] text-white p-4 rounded-xl mx-4 md:mx-10 overflow-x-auto">
-            <h2 className="flex justify-center text-2xl font-semibold mb-4 text-center md:text-left">
-                Admin Table
-            </h2>
+            <h2 className="text-2xl font-semibold mb-4 text-center md:text-left">Admin Table</h2>
 
-            <div className="overflow-x-auto w-full">
-                <table className="min-w-[800px] w-full text-center border-separate border-spacing-y-2">
-                    <thead>
-                        <tr className="text-gray-400 text-sm">
+            <div className="w-full overflow-x-auto">
+                <table className="min-w-[1000px] w-full text-left border-separate border-spacing-y-2">
+                    <thead className="text-gray-400 text-sm">
+                        <tr>
                             <th className="px-4 py-2">S.N.</th>
                             <th className="px-4 py-2">First Name</th>
                             <th className="px-4 py-2">Last Name</th>
@@ -87,7 +85,7 @@ const AdminTable = () => {
                     </thead>
                     <tbody>
                         {users.map((user, index) => (
-                            <tr key={user.id} className="hover:bg-[#333] transition duration-200 rounded-lg">
+                            <tr key={user.id} className="bg-[#1e1e1e] rounded-lg">
                                 <td className="px-4 py-2 border-t border-[#ffffff8a]">{index + 1}</td>
                                 <td className="px-4 py-2 border-t border-[#ffffff8a]">{user.firstname}</td>
                                 <td className="px-4 py-2 border-t border-[#ffffff8a]">{user.lastname}</td>
@@ -96,14 +94,9 @@ const AdminTable = () => {
                                 <td className="px-4 py-2 border-t border-[#ffffff8a]">{user.address}</td>
                                 <td className="px-4 py-2 border-t border-[#ffffff8a]">{user.role}</td>
                                 <td className="px-4 py-2 border-t border-[#ffffff8a]">
-                                    <span
-                                        className={`px-2 py-1 rounded-full text-xs font-semibold ${user.status === 'ACTIVE'
-                                            ? 'bg-green-600 text-white'
-                                            : user.status === 'DELETE'
-                                                ? 'bg-red-600 text-white'
-                                                : 'bg-gray-500 text-white'
-                                            }`}
-                                    >
+                                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${user.status === 'ACTIVE' ? 'bg-green-600' :
+                                        user.status === 'DELETE' ? 'bg-red-600' : 'bg-gray-600'
+                                        } text-white`}>
                                         {user.status}
                                     </span>
                                 </td>
@@ -113,8 +106,12 @@ const AdminTable = () => {
                                 >
                                     View
                                 </td>
-                                <td className="flex justify-center items-center px-4 py-2 border-t border-[#ffffff8a] cursor-pointer text-red-400 hover:underline">
-                                    <MdDeleteForever size={24} onClick={() => handleDelete(user.id)} />
+                                <td className="px-4 py-2 border-t border-[#ffffff8a]">
+                                    <MdDeleteForever
+                                        size={24}
+                                        onClick={() => handleDelete(user.id)}
+                                        className="text-red-400 cursor-pointer hover:text-red-600"
+                                    />
                                 </td>
                             </tr>
                         ))}
@@ -124,7 +121,7 @@ const AdminTable = () => {
 
             {/* Modal */}
             {showModal && selectedUser && (
-                <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+                <div className="fixed inset-0 flex justify-center items-center backdrop-blur-sm z-50">
                     <div className="bg-[#1e1e1e] py-6 px-10 rounded-xl w-[90%] max-w-md text-white relative">
                         <button
                             className="absolute top-2 right-2 text-gray-400 cursor-pointer hover:text-red-700"
@@ -150,14 +147,12 @@ const AdminTable = () => {
                             </p>
                             <p className="text-gray-400">Status:</p>
                             <p>
-                                <span
-                                    className={`px-2 py-1 rounded-full text-xs font-semibold ${selectedUser.status === 'ACTIVE'
-                                        ? 'bg-green-600 text-white'
-                                        : selectedUser.status === 'DELETE'
-                                            ? 'bg-red-600 text-white'
-                                            : 'bg-gray-600 text-white'
-                                        }`}
-                                >
+                                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${selectedUser.status === 'ACTIVE'
+                                    ? 'bg-green-600'
+                                    : selectedUser.status === 'DELETE'
+                                        ? 'bg-red-600'
+                                        : 'bg-gray-600'
+                                    } text-white`}>
                                     {selectedUser.status}
                                 </span>
                             </p>
