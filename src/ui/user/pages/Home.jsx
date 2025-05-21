@@ -1,10 +1,11 @@
-import React from 'react'
-
+import CategorySection from '../organisms/CategorySection'
+import HeroSection from '../organisms/HeroSection'
 const Home = () => {
     return (
-        <div>
-            Home
-        </div>
+        <>
+            <HeroSection />
+            <CategorySection />
+        </>
     )
 }
 
