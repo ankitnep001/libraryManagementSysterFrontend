@@ -13,14 +13,17 @@ const CategorySection = () => {
         const fetchCategories = async () => {
             try {
                 const token = localStorage.getItem('token');
-
                 const res = await axios.get("http://localhost:8080/api/category/getAllCategory", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                console.log(res)
-                setCategories(res.data || []);
+
+                const activeCategories = (res.data || []).filter(
+                    (category) => category.status !== "DELETED"
+                );
+
+                setCategories(activeCategories);
             } catch (err) {
                 setError('Failed to load categories');
                 console.error(err);
@@ -41,7 +44,6 @@ const CategorySection = () => {
     return (
         <section className="py-12 px-4 md:px-10 bg-[#f9f9f9]">
             <h2 className="text-3xl font-bold mb-8 text-center text-[#222]">Explore Categories</h2>
-            <p>All </p>
 
             {loading ? (
                 <p className="text-center text-[#555]">Loading categories...</p>
@@ -49,11 +51,11 @@ const CategorySection = () => {
                 <p className="text-center text-red-500">{error}</p>
             ) : (
                 <>
-                    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                    <div className="grid gap-x-6 gap-y-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                         {visibleCategories.map((category) => (
                             <div
                                 key={category.id}
-                                className="bg-[#ffffff] shadow-md rounded-xl p-6 hover:shadow-lg transition-shadow duration-300"
+                                className="bg-white shadow rounded-xl p-6 hover:shadow-lg transition-shadow duration-300 h-full"
                             >
                                 <h3 className="text-xl font-semibold mb-2 text-[#333]">
                                     {category.categoryName?.trim()}
