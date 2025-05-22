@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { image } from '../../../config/constant/image'; // fallback image import
 import BorrowModal from '../organisms/BorrowModal';
 
@@ -9,6 +10,8 @@ const Category = () => {
     const [imageUrls, setImageUrls] = useState({});
     const [selectedBookId, setSelectedBookId] = useState(null);
     const modalRef = useRef(null);
+
+    const navigate = useNavigate();
 
     const userId = localStorage.getItem('userId');
     const token = localStorage.getItem('token');
@@ -42,17 +45,12 @@ const Category = () => {
                     }),
                 ]);
 
-                let fetchedBooks = booksRes.data || [];
+                const fetchedBooks = (booksRes.data || []).filter(book => book.status !== 'DELETED');
                 const fetchedCategories = categoriesRes.data || [];
 
-
-                const filteredBooks = fetchedBooks.filter(book => book.status !== 'DELETED');
-
-
-                setBooks(filteredBooks);
+                setBooks(fetchedBooks);
                 setCategories(fetchedCategories);
-                console.log(fetchedBooks)
-                // Preload images for books
+
                 fetchedBooks.forEach((book) => {
                     if (book.imageName) {
                         fetchImage(book.imageName, book.id);
@@ -63,7 +61,6 @@ const Category = () => {
                 console.error('Failed to fetch books or categories:', err);
             }
         };
-
 
         fetchBooksAndCategories();
     }, [token]);
@@ -86,8 +83,8 @@ const Category = () => {
     }, [selectedBookId]);
 
     return (
-        <div className="p-6 md:p-10 bg-[#f9f9f9] min-h-screen relative">
-            <h1 className="text-3xl font-bold text-center mb-10 text-[#222]">Books by Category</h1>
+        <div className="p-4 md:p-10 bg-[#f9f9f9] min-h-screen">
+            <h1 className="text-3xl font-bold text-center mb-10 text-gray-800">Books by Category</h1>
 
             {categories.map((category) => {
                 const booksInCategory = books.filter((book) => book.categoryId === category.id);
@@ -96,39 +93,56 @@ const Category = () => {
 
                 return (
                     <div key={category.id} className="mb-12">
-                        <h2 className="text-2xl font-semibold mb-6 text-[#333] border-l-4 border-blue-500 pl-4">
+                        <h2 className="text-2xl font-semibold mb-6 text-gray-700 border-l-4 border-blue-500 pl-4">
                             {category.categoryName}
                         </h2>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                             {booksInCategory.map((book) => (
                                 <div
                                     key={book.id}
-                                    className="bg-white rounded-xl shadow hover:shadow-lg transition duration-300 flex flex-col"
+                                    className="bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md transition duration-300 flex flex-col overflow-hidden"
                                 >
                                     <img
                                         src={imageUrls[book.id] || image.fallback}
-                                        alt={book.title}
-                                        className="w-full h-40 object-cover rounded-t-xl"
+                                        alt={book.title || "Book cover"}
+                                        className="w-full h-48 object-cover"
                                         onError={(e) => {
                                             e.target.onerror = null;
                                             e.target.src = image.fallback;
                                         }}
                                     />
 
-                                    <div className="p-4 flex flex-col h-full">
-                                        <h3 className="text-xl font-semibold text-[#222] mb-1">{book.title}</h3>
-                                        <p className="text-sm text-gray-600 mb-2 line-clamp-3">{book.description}</p>
-                                        <p className="text-sm text-gray-500 mb-1">
-                                            Author: <span className="font-medium">{book.authorName}</span>
-                                        </p>
-
-                                        <button
-                                            onClick={() => setSelectedBookId(book.id)}
-                                            className="mt-auto px-4 py-2 bg-blue-600 text-white rounded cursor-pointer hover:bg-blue-700"
-                                        >
-                                            Borrow Now
-                                        </button>
+                                    <div className="p-4 flex flex-col flex-1">
+                                        <div className="mb-4">
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                                                {book.title || "Untitled Book"}
+                                            </h3>
+                                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                                                {book.description || "No description available"}
+                                            </p>
+                                            <p className="text-sm text-gray-500">
+                                                Author: <span className="font-medium">{book.authorName || "Unknown"}</span>
+                                            </p>
+                                        </div>
+                                        <div className="flex gap-4 mt-auto">
+                                            <button
+                                                onClick={() =>
+                                                    navigate(`/book/${book.id}`, {
+                                                        state: { categoryName: category.categoryName }
+                                                    })
+                                                }
+                                                className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                                            >
+                                                View Details
+                                            </button>
+                                            <button
+                                                onClick={() => setSelectedBookId(book.id)}
+                                                className="flex-1 px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
+                                            >
+                                                Borrow Now
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -142,11 +156,14 @@ const Category = () => {
             )}
 
             {selectedBookId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-                    <div ref={modalRef} className="bg-white p-6 rounded-lg w-full max-w-lg relative">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm px-4">
+                    <div
+                        ref={modalRef}
+                        className="bg-white p-6 rounded-lg w-full max-w-lg relative shadow-lg"
+                    >
                         <button
                             onClick={() => setSelectedBookId(null)}
-                            className="absolute top-2 right-2 text-gray-600 hover:text-black text-2xl"
+                            className="absolute top-3 right-4 text-gray-600 hover:text-black text-2xl"
                             aria-label="Close modal"
                         >
                             &times;
@@ -161,6 +178,7 @@ const Category = () => {
             )}
         </div>
     );
+
 };
 
 export default Category;

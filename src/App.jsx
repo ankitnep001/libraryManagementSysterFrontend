@@ -10,6 +10,7 @@ import PageNotFound from "./ui/common/pages/PageNotFound";
 import About from "./ui/user/pages/About";
 import Login from "./ui/user/pages/auth/Login";
 import Signup from "./ui/user/pages/auth/Signup";
+import BookDetail from "./ui/user/pages/BookDetail";
 import Category from "./ui/user/pages/Category";
 import Home from "./ui/user/pages/Home";
 import User from "./ui/user/pages/User";
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
           { index: true, element: <Home /> },
           { path: 'home', element: <Home /> },
           { path: 'category', element: <Category /> },
+          { path: 'book/:id', element: <BookDetail /> },  // <-- 👈 Add this line
           { path: 'profile', element: <User /> },
           { path: 'about-us', element: <About /> },
 
