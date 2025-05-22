@@ -7,6 +7,7 @@ import BorrowedBook from "./ui/admin/pages/BorrwoedBook";
 import Dashboard from "./ui/admin/pages/Dashboard";
 import UserTable from "./ui/admin/pages/UserTable";
 import PageNotFound from "./ui/common/pages/PageNotFound";
+import About from "./ui/user/pages/About";
 import Login from "./ui/user/pages/auth/Login";
 import Signup from "./ui/user/pages/auth/Signup";
 import Category from "./ui/user/pages/Category";
@@ -27,6 +28,8 @@ const router = createBrowserRouter([
           { path: 'home', element: <Home /> },
           { path: 'category', element: <Category /> },
           { path: 'profile', element: <User /> },
+          { path: 'about-us', element: <About /> },
+
           { path: '*', element: <PageNotFound /> }
         ]
       }
