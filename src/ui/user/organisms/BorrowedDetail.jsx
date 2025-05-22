@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { toast } from '../../common/organism/toast/ToastManage';
+
 
 const BorrowedDetail = () => {
     const [borrowedBooks, setBorrowedBooks] = useState([]);
@@ -20,6 +22,7 @@ const BorrowedDetail = () => {
 
             const userBorrowedBooks = res.data.filter((borrow) => borrow.userId === userId);
             setBorrowedBooks(userBorrowedBooks);
+
         } catch (err) {
             console.error('Error fetching borrowed books:', err);
             setError('Failed to load borrowed books.');
@@ -56,6 +59,8 @@ const BorrowedDetail = () => {
             );
 
             setBorrowedBooks((prev) => prev.filter((b) => b.bookId !== bookId));
+            toast.show({ title: "Success", content: "Returned successfully", duration: 2000, type: 'success' });
+
         } catch (err) {
             console.error('Error returning book:', err);
             alert('Failed to return the book.');

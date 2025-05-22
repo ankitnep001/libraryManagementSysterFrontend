@@ -36,7 +36,7 @@ const BorrowModal = ({ bookId, userId, onClose }) => {
     const onSubmit = async (data) => {
         try {
             await axios.post(
-                'http://localhost:8080/api/borrow/add',
+                'http://localhost:8080/api/user/borrowBook',
                 {
                     bookId: data.bookId,
                     userId: data.userId,
@@ -52,10 +52,16 @@ const BorrowModal = ({ bookId, userId, onClose }) => {
             onClose();
             reset();
         } catch (error) {
-            console.error('Failed to borrow book:', error);
-            alert('Failed to borrow book.');
+            if (error.response && error.response.status === 409) {
+                // Assuming 409 Conflict is returned if book is already borrowed
+                alert('You have already borrowed this book or it is currently unavailable.');
+            } else {
+                console.error('Failed to borrow book:', error);
+                alert('Failed to borrow book.');
+            }
         }
     };
+
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
