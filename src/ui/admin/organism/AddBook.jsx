@@ -1,9 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useEffect } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import InputField from '../../common/atoms/InputField';
-import Label from '../../common/atoms/Label';
+import { toast } from '../../../ui/common/organism/toast/ToastManage';
 
 const bookSchema = yup.object().shape({
     title: yup.string().required('Title is required'),
@@ -16,17 +16,21 @@ const bookSchema = yup.object().shape({
         .required('Number of Books is required'),
     image: yup
         .mixed()
+        .required('Image is required')
         .test('fileSize', 'File size too large', (value) => {
-            if (!value || value.length === 0) return true;
+            if (!value?.length) return false;
             return value[0].size <= 5 * 1024 * 1024;
         })
         .test('fileType', 'Unsupported file format', (value) => {
-            if (!value || value.length === 0) return true;
-            return ['image/jpeg', 'image/png', 'image/gif'].includes(value[0].type);
+            if (!value?.length) return false;
+            return ['image/jpeg', 'image/png', 'image/webp'].includes(value[0].type);
         }),
+    categoryId: yup.string().required('Category is required'),
 });
 
-const AddBook = ({ onSubmitBook, editData }) => {
+const AddBook = () => {
+    const [categories, setCategories] = useState([]);
+
     const {
         register,
         handleSubmit,
@@ -40,137 +44,161 @@ const AddBook = ({ onSubmitBook, editData }) => {
             description: '',
             authorName: '',
             numberOfBooks: 1,
-            imageFile: null,
+            image: null,
+            categoryId: '',
         },
     });
 
-    useEffect(() => {
-        if (editData) {
-            reset({
-                title: editData.title,
-                description: editData.description,
-                authorName: editData.authorName,
-                numberOfBooks: editData.numberOfBooks,
-                imageFile: null,
-            });
-        } else {
-            reset({
-                title: '',
-                description: '',
-                authorName: '',
-                numberOfBooks: 1,
-                imageFile: null,
-            });
-        }
-    }, [editData, reset]);
-
-    const onSubmit = async (data) => {
-        const bookData = {
-            title: data.title,
-            description: data.description,
-            authorName: data.authorName,
-            numberOfBooks: data.numberOfBooks,
-            image: data.imageFile?.[0] || null, // Access the uploaded file
-        };
-
-        await onSubmitBook(bookData); // Pass to parent handler
-        reset(); // Clear form after submission
-    }
-
     const imageFile = watch('image');
 
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get("http://localhost:8080/api/category/getAllCategory", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                const activeCategories = (response.data || []).filter(
+                    (category) => category.status !== "DELETED"
+                );
+                setCategories(activeCategories);
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    const onSubmit = async (data) => {
+        try {
+            const token = localStorage.getItem('token');
+
+            const formData = new FormData();
+
+            // Append the image file
+            formData.append('image', data.image[0]);
+
+            // Prepare the book DTO
+            const bookDto = {
+                title: data.title,
+                description: data.description,
+                authorName: data.authorName,
+                numberOfBooks: parseInt(data.numberOfBooks, 10), // Ensure it's a number
+                categoryId: data.categoryId, // Assume this is from a dropdown or similar
+            };
+
+            // Append the book DTO as JSON Blob
+            formData.append('book', new Blob([JSON.stringify(bookDto)], { type: 'application/json' }));
+
+            // Send the request using your existing axios instance (make sure it does NOT set 'Content-Type' manually)
+            await axios.post('http://localhost:8080/api/book/admin/add', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    // ❌ Do NOT set 'Content-Type' here manually
+                },
+            });
+            toast.show({ title: "Success", content: "Added successfully", duration: 2000, type: 'success' });
+
+
+            reset();
+
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     return (
-        <div>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
-                <div className="relative">
-                    <Label name="title" label="Title" required />
-                    <InputField
+        <div className="max-w-xl mx-auto p-4 border rounded shadow-md">
+            <h2 className="text-xl font-semibold mb-4">Add New Book</h2>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                {/* Title */}
+                <div>
+                    <label className="block font-medium">Title</label>
+                    <input
+                        type="text"
                         {...register('title')}
-                        name="title"
+                        className="w-full border px-3 py-2 rounded"
                         placeholder="Enter book title"
-                        className="pl-3 border border-gray-300 rounded w-full"
                     />
-                    {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+                    {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
                 </div>
 
-                <div className="relative">
-                    <Label name="description" label="Description" required />
+                {/* Description */}
+                <div>
+                    <label className="block font-medium">Description</label>
                     <textarea
                         {...register('description')}
-                        name="description"
-                        placeholder="Enter book description"
-                        className="pl-3 border border-gray-300 rounded w-full h-24 resize-none"
+                        className="w-full border px-3 py-2 rounded resize-none"
+                        placeholder="Enter description"
                     />
-                    {errors.description && (
-                        <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
-                    )}
+                    {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                 </div>
 
-                <div className="relative">
-                    <Label name="authorName" label="Author Name" required />
-                    <InputField
+                {/* Author Name */}
+                <div>
+                    <label className="block font-medium">Author Name</label>
+                    <input
+                        type="text"
                         {...register('authorName')}
-                        name="authorName"
+                        className="w-full border px-3 py-2 rounded"
                         placeholder="Enter author name"
-                        className="pl-3 border border-gray-300 rounded w-full"
                     />
-                    {errors.authorName && (
-                        <p className="text-red-500 text-sm mt-1">{errors.authorName.message}</p>
-                    )}
+                    {errors.authorName && <p className="text-red-500 text-sm">{errors.authorName.message}</p>}
                 </div>
 
-                <div className="relative">
-                    <Label name="numberOfBooks" label="Number of Books" required />
-                    <InputField
-                        {...register('numberOfBooks')}
+                {/* Number of Books */}
+                <div>
+                    <label className="block font-medium">Number of Books</label>
+                    <input
                         type="number"
                         min={1}
-                        name="numberOfBooks"
-                        placeholder="Enter number of books"
-                        className="pl-3 border border-gray-300 rounded w-full"
+                        {...register('numberOfBooks')}
+                        className="w-full border px-3 py-2 rounded"
+                        placeholder="Enter quantity"
                     />
-                    {errors.numberOfBooks && (
-                        <p className="text-red-500 text-sm mt-1">{errors.numberOfBooks.message}</p>
-                    )}
+                    {errors.numberOfBooks && <p className="text-red-500 text-sm">{errors.numberOfBooks.message}</p>}
                 </div>
 
-                <div className="relative">
-                    <Label name="image" label="Book Cover Image" />
-                    <label
-                        htmlFor="image"
-                        className="inline-block cursor-pointer bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md shadow-sm select-none"
-                    >
-                        Choose File
-                    </label>
-                    <input
-                        {...register('image')}
-                        type="file"
-                        accept="image/*"
-                        id="image"
-                        name="image"
-                        className="hidden"
-                    />
-                    {imageFile && imageFile.length > 0 && (
-                        <span className="ml-3 text-gray-600">{imageFile[0].name}</span>
-                    )}
-                    {errors.imageFile && (
-                        <p className="text-red-500 text-sm mt-1">{errors.imageFile.message}</p>
-                    )}
-                    {imageFile && imageFile.length > 0 && (
+                {/* Category */}
+                <div>
+                    <label className="block font-medium">Category</label>
+                    <select {...register('categoryId')} className="w-full border px-3 py-2 rounded">
+                        <option value="">Select Category</option>
+                        {categories.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.categoryName}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.categoryId && <p className="text-red-500 text-sm">{errors.categoryId.message}</p>}
+                </div>
+
+                {/* Image Upload */}
+                <div>
+                    <label className="block font-medium">Cover Image</label>
+                    <input type="file" accept="image/*" {...register('image')} />
+                    {imageFile?.length > 0 && (
                         <img
                             src={URL.createObjectURL(imageFile[0])}
                             alt="Preview"
-                            className="mt-2 h-24 w-auto rounded"
+                            className="w-32 mt-2 border rounded"
                         />
                     )}
+                    {errors.image && <p className="text-red-500 text-sm">{errors.image.message}</p>}
                 </div>
 
+                {/* Submit */}
                 <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-[#5c3aa7] text-white px-4 py-2 rounded w-full hover:bg-[#4a2d85] transition"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded"
                 >
-                    {isSubmitting ? (editData ? 'Updating...' : 'Adding...') : editData ? 'Update Book' : 'Add Book'}
+                    {isSubmitting ? 'Submitting...' : 'Add Book'}
                 </button>
             </form>
         </div>
