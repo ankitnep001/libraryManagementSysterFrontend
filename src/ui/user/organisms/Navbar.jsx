@@ -31,7 +31,7 @@ const Navbar = () => {
                 <NavMenu />
 
                 {/* Search Bar */}
-                <div className="hidden md:flex flex-1  max-w-md mx-6">
+                {/* <div className="hidden md:flex flex-1  max-w-md mx-6">
                     <div className="relative w-full">
                         <input
                             type="text"
@@ -40,7 +40,7 @@ const Navbar = () => {
                         />
                         <FiSearch size={20} className="absolute left-3 top-2.5 text-white" />
                     </div>
-                </div>
+                </div> */}
 
                 {/* User Section */}
                 <div className="flex items-center space-x-4">
