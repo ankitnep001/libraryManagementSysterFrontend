@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { toast } from '../../common/organism/toast/ToastManage';
 
 
-const BorrowedDetail = () => {
+const ReturnedDetail = () => {
     const [borrowedBooks, setBorrowedBooks] = useState([]);
     const [booksMap, setBooksMap] = useState({});
     const [loading, setLoading] = useState(true);
@@ -15,15 +15,14 @@ const BorrowedDetail = () => {
 
     const fetchBorrowedBooks = async () => {
         try {
+            // 1. Get all borrowed data
             const res = await axios.get('http://localhost:8080/api/borrow/getAll', {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
-            const userBorrowedBooks = res.data
-                .filter((borrow) => borrow.userId === userId && borrow.status !== 'RETURNED');
-
-            console.log(userBorrowedBooks);
+            const userBorrowedBooks = res.data.filter((borrow) => borrow.userId === userId);
             setBorrowedBooks(userBorrowedBooks);
+
         } catch (err) {
             console.error('Error fetching borrowed books:', err);
             setError('Failed to load borrowed books.');
@@ -31,7 +30,6 @@ const BorrowedDetail = () => {
             setLoading(false);
         }
     };
-
 
     const fetchAllBooks = async () => {
         try {
@@ -117,4 +115,4 @@ const BorrowedDetail = () => {
     );
 };
 
-export default BorrowedDetail;
+export default ReturnedDetail;

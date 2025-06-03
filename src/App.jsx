@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ProtectedRoute from "../src/ProtectedRoute";
 import AdminTemplate from '../src/ui/admin/template/AdminTemplate';
+import ProtectedRoute from './ProtectedRoute';
 import BooksCategory from "./ui/admin/pages/BookCategory";
 import BookTable from "./ui/admin/pages/BookTable";
 import BorrowedBook from "./ui/admin/pages/BorrwoedBook";
@@ -15,12 +16,11 @@ import Category from "./ui/user/pages/Category";
 import Home from "./ui/user/pages/Home";
 import User from "./ui/user/pages/User";
 import UserTemplate from "./ui/user/template/UserTemplate";
-
 const router = createBrowserRouter([
   // STUDENT ROUTES
   {
     path: '/',
-    element: <ProtectedRoute allowedRoles={['STUDENT']} />,
+    // element: <UserTemplate/>,
     children: [
       {
         element: <UserTemplate />,
@@ -71,6 +71,10 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  useEffect(() => {
+    // 👇 This runs only once when app loads
+    localStorage.setItem('isLoggedIn', 'false');
+  }, []);
   return <RouterProvider router={router} />;
 }
 

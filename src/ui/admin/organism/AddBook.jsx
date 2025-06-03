@@ -98,7 +98,6 @@ const AddBook = () => {
             await axios.post('http://localhost:8080/api/book/admin/add', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    // ❌ Do NOT set 'Content-Type' here manually
                 },
             });
             toast.show({ title: "Success", content: "Added successfully", duration: 2000, type: 'success' });

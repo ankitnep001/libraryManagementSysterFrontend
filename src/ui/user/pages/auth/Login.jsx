@@ -11,6 +11,7 @@ import { toast } from '../../../../ui/common/organism/toast/ToastManage';
 import InputField from '../../../common/atoms/InputField';
 import Label from '../../../common/atoms/Label';
 import Logo from '../../../common/molecules/Logo';
+
 const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -29,15 +30,15 @@ const Login = () => {
 
             const { token, refreshToken, userId, userName, role } = response.data;
 
-            // Store tokens and user info
+            // Store tokens, user info, and login status
             localStorage.setItem('token', token);
             localStorage.setItem('refreshToken', refreshToken);
             localStorage.setItem('userId', userId);
             localStorage.setItem('userName', userName);
             localStorage.setItem('role', role);
+            localStorage.setItem('isLoggedIn', 'true'); // ✅ added login status
 
             toast.show({ title: "Success", content: "Login successfully", duration: 2000, type: 'success' });
-
 
             // Route based on role
             if (role === 'ADMIN') {
@@ -51,10 +52,8 @@ const Login = () => {
         } catch (error) {
             console.error('Login error:', error.response?.data?.message || error.message);
             toast.show({ title: "Error", content: "Login Unsuccessfully", duration: 2000, type: 'error' });
-
         }
     };
-
 
     useEffect(() => {
         const refreshAccessToken = async () => {
@@ -89,9 +88,6 @@ const Login = () => {
 
         return () => clearInterval(interval);
     }, [location.pathname, navigate]);
-
-
-
 
     return (
         <div className='w-full flex flex-col md:flex-row h-screen fixed overflow-y-auto md:overflow-hidden'>

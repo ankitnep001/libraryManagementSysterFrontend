@@ -8,24 +8,33 @@ const CategorySection = () => {
     const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
+        // Check login status from localStorage
+        const loginStatus = localStorage.getItem("isLoggedIn");
+        setIsLoggedIn(loginStatus === 'true');
+
         const fetchCategories = async () => {
             try {
                 const token = localStorage.getItem('token');
+
                 const res = await axios.get("http://localhost:8080/api/category/getAllCategory", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-
                 const activeCategories = (res.data || []).filter(
                     (category) => category.status !== "DELETED"
                 );
 
                 setCategories(activeCategories);
             } catch (err) {
-                setError('Failed to load categories');
+                if (loginStatus !== 'true') {
+                    setError('You need to login to see the categories');
+                } else {
+                    setError('Failed to fetch categories. Please try again later.');
+                }
                 console.error(err);
             } finally {
                 setLoading(false);
@@ -36,7 +45,9 @@ const CategorySection = () => {
     }, []);
 
     const handleToggleView = () => {
-        setVisibleCount(prev => (prev === INITIAL_VISIBLE_COUNT ? categories.length : INITIAL_VISIBLE_COUNT));
+        setVisibleCount(prev =>
+            prev === INITIAL_VISIBLE_COUNT ? categories.length : INITIAL_VISIBLE_COUNT
+        );
     };
 
     const visibleCategories = categories.slice(0, visibleCount);

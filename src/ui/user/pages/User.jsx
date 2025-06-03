@@ -22,6 +22,14 @@ const User = () => {
                 >
                     Borrowed Books
                 </button>
+
+                <button
+                    onClick={() => setActiveTab('returnedBooks')}
+                    className={`px-4 py-2 rounded ${activeTab === 'borrowedBooks' ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600'
+                        }`}
+                >
+                    My Returned Books
+                </button>
             </nav>
 
             <div className='text-black'>

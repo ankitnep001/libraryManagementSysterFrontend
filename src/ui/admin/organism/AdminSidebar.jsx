@@ -32,7 +32,7 @@ const AdminNavbar = () => {
         localStorage.removeItem("userName");
         localStorage.removeItem("role");
 
-        navigate("/login");
+        navigate("/auth/login");
     };
 
     return (
